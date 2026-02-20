@@ -1,7 +1,10 @@
 #include <iostream>
 #include <string>
+#include <sstream>
 
 #include "structs.cpp"
+
+using namespace std;
 
 string shuntingYard(string input);
 Node* makeExpressionTree(string input);
@@ -47,4 +50,26 @@ int main() {
   }
     
   return 0;
+}
+
+string shuntingYard(string input) {
+
+  stringstream ss(input);
+  string word;
+  Queue* output = new Queue();
+  Stack* operatorStack = new Stack();
+  
+  while (ss >> word) {
+
+    try {
+      //Number
+      if (stoi(word) < 10 and stoi(word) > 0) { output->enqueue(stoi(word)); }
+
+      //Operator
+      else if (word == "+" or word == "-" or word == "*" or word == "/" or word == "^") {
+
+	while (operatorStack->peek() != "(" and 
+      }
+    }
+  }
 }
