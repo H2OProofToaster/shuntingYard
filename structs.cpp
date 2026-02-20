@@ -1,13 +1,14 @@
 #ifndef STRUCTS_CPP
 #define STRUCTS_CPP
 
-template <typename T>
 struct Node {
 
-  T* data = nullptr;
+  char* data = nullptr;
+  Node* left = nullptr;
+  Node* right = nullptr;
   Node* next = nullptr;
 
-  Node(T* d) : data(d) {}
+  Node(char* d) : data(d) {}
   ~Node() {
 
     if (next != nullptr) { delete next; }
@@ -21,41 +22,67 @@ struct Stack {
 
   ~Stack() { delete head; }
 
-  void push(T* data) {
+  void push(char* data) {
 
-    Node<T>* newNode = new Node<T>(data);
+    Node* newNode = new Node(data);
     newNode->next = head;
     head = newNode;
   }
 
   void pop() {
 
-    NodeT>* delNode = head;
+    Node* delNode = head;
     head = head->next;
     delete delNode;
   }
 
-  T* peek() { return head->data; }
+  char* peek() { return head->data; }
 };
 
 struct Queue {
 
-  Node* head = nullptr;
-  Node* tail = nullptr;
+  Node* head = nullptr; //New things
+  Node* tail = nullptr; //Old things
 
-  void enqueue(T* data) {
+  void enqueue(char* data) {
 
     //Empty queue
     if (head == nullptr) {
 
-      head = new Node<T>(data);
+      head = new Node(data);
       tail = head;
     }
 
+    else {
+
+      head->next = new Node(data);
+      head = head->next;
+    }
+  }
+
+  char* dequeue() {
+
+    //Empty queue
+    if (tail == nullptr) { return nullptr; }
+
     //One element
-    if (*head == *tail) {
+    else if (*tail == *head) {
 
-      tail = new Node<T>(data);
+      Node* temp = tail;
+      tail = nullptr;
+      head = nullptr;
+      return temp;
+    }
+
+    else {
+
+      Node* temp = tail->next;
+      tail = tail->next;
+      temp->next = nullptr;
+      return temp;
+    }
+  }
+};
       
-
+      
 #endif
