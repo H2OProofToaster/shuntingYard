@@ -1,18 +1,19 @@
 #ifndef STRUCTS_CPP
 #define STRUCTS_CPP
 
+#include <string>
+
 struct Node {
 
-  char* data = nullptr;
+  string data = nullptr;
   Node* left = nullptr;
   Node* right = nullptr;
   Node* next = nullptr;
 
-  Node(char* d) : data(d) {}
+  Node(string d) : data(d) {}
   ~Node() {
 
     if (next != nullptr) { delete next; }
-    delete data;
   }
 };
 
@@ -22,24 +23,28 @@ struct Stack {
 
   ~Stack() { delete head; }
 
-  //Make take string
-  void push(char* data) {
+  void push(string data) {
 
     Node* newNode = new Node(data);
     newNode->next = head;
     head = newNode;
   }
 
-  //Make return node
-  //Make discard function
-  void pop() {
+  Node* pop() {
+
+    Node* delNode = head;
+    head = head->next;
+    return delNode;
+  }
+
+  void discard() {
 
     Node* delNode = head;
     head = head->next;
     delete delNode;
   }
 
-  char* peek() { return head->data; }
+  string peek() { return head->data; }
 };
 
 struct Queue {
@@ -48,26 +53,27 @@ struct Queue {
   Node* head = nullptr; //New things
   Node* tail = nullptr; //Old things
 
-  //Make overload for popping from stack
-  //Make take string
-  void enqueue(char* data) {
+  Queue(string in) { enqueue(in); }
+  
+  void enqueue(string data) { enqueue(new Node(string)); }
+  
+  void enqueue(Node* data) {
 
     //Empty queue
     if (head == nullptr) {
 
-      head = new Node(data);
+      head = data;
       tail = head;
     }
 
     else {
 
-      head->next = new Node(data);
+      head->next = data;
       head = head->next;
     }
   }
 
-  //Make return string
-  char* dequeue() {
+  string dequeue() {
 
     //Empty queue
     if (tail == nullptr) { return nullptr; }
@@ -90,6 +96,5 @@ struct Queue {
     }
   }
 };
-      
-      
+            
 #endif
