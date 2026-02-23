@@ -3,6 +3,8 @@
 
 #include <string>
 
+using namespace std;
+
 struct Node {
 
   string data = nullptr;
@@ -15,6 +17,8 @@ struct Node {
 
     if (next != nullptr) { delete next; }
   }
+
+  bool operator==(Node& other) { return data == other.data; }
 };
 
 struct Stack {
@@ -46,7 +50,9 @@ struct Stack {
     delete delNode;
   }
 
-  string peek() { return head->data; }
+  Node* peek() { return head; }
+
+  bool isEmpty() { return (head == nullptr) ? true : false; }
 };
 
 struct Queue {
@@ -55,9 +61,10 @@ struct Queue {
   Node* head = nullptr; //New things
   Node* tail = nullptr; //Old things
 
+  Queue() {}
   Queue(string in) { enqueue(in); }
   
-  void enqueue(string data) { enqueue(new Node(string)); }
+  void enqueue(string data) { enqueue(new Node(data)); }
   
   void enqueue(Node* data) {
 
@@ -75,7 +82,7 @@ struct Queue {
     }
   }
 
-  string dequeue() {
+  Node* dequeue() {
 
     //Empty queue
     if (tail == nullptr) { return nullptr; }
@@ -97,6 +104,8 @@ struct Queue {
       return temp;
     }
   }
+
+  bool isEmpty() { return (head == nullptr) ? true : false; }
 };
             
 #endif

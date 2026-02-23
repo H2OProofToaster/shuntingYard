@@ -9,12 +9,12 @@ using namespace std;
 Queue* shuntingYard(string input);
 Node* makeExpressionTree(Queue* input);
 
-sting getInfix(Node* input);
+string getInfix(Node* input);
 string getPostfix(Node* input);
 string getPrefix(Node* input);
 
 bool isEqual(string o1, string o2);
-int getGreater(string o1, string o2);
+string getGreater(string o1, string o2);
 
 int main() {
 
@@ -27,7 +27,6 @@ int main() {
   cout << "Shunting..." << endl;
 
   Queue* shuntingOut = shuntingYard(input);
-  cout << "Shunting yard postfix: " << postfix << endl;
   
   cout << "Done" << endl;
 
@@ -44,9 +43,9 @@ int main() {
     cout << "INFIX, POSTFIX, or PREFIX? ";
     cin >> outputType;
 
-    if (outputType == "INFIX" or outputType == "i") { printInfix(tree); }
-    else if (outputType == "POSTFIX" or outputType == "post") { printPostfix(tree); }
-    else if (outputType == "PREFIX" or outputType == "pre") { printPrefix(tree); }
+    if (outputType == "INFIX" or outputType == "in") { cout << getInfix(tree) << endl; }
+    else if (outputType == "POSTFIX" or outputType == "post") { cout << getPostfix(tree) << endl; }
+    else if (outputType == "PREFIX" or outputType == "pre") { cout << getPrefix(tree) << endl; }
     else { cout << "Not an option" << endl; }
 
     outputType.clear();
@@ -55,7 +54,7 @@ int main() {
   return 0;
 }
 
-string shuntingYard(string input) {
+Queue* shuntingYard(string input) {
 
   stringstream ss(input);
   string word;
@@ -68,11 +67,11 @@ string shuntingYard(string input) {
 
     else if (word == "+" or word == "-" or word  == "*" or word == "/" or word == "^") {
 
-      while ( (operatorStack->peek() != "(") and \ //top operator (o2) is not "("
+      while ( (operatorStack->peek()->data != "(") and //top operator (o2) is not "("
 	      (
-	        getGreater(word, operatorStack->peek()) != word or	\ //o2 has greater precedence than o1
+	        getGreater(word, operatorStack->peek()->data) != word or //o2 has greater precedence than o1
 
-		  isEqual(word, operatorStack->peek()) and		\ //o1 and o2 have same precedence
+		  isEqual(word, operatorStack->peek()->data) and //o1 and o2 have same precedence
 		  (word == "+" or word == "-" or word == "*" or word == "/") //o1 is left associative
 	      )
 	    ) { output->enqueue(operatorStack->pop()); }
@@ -83,14 +82,14 @@ string shuntingYard(string input) {
 
     else if (word == ")") {
 
-      while (operatorStack->peek() != "(") {
+      while (operatorStack->peek()->data != "(") {
 
 	if (operatorStack->isEmpty()) { return new Queue("Mismatched parenthesis"); }
 
 	output->enqueue(operatorStack->pop());
       }
 
-      if (operatorStack->peek() != "(") { return new Queue("Mismatched parenthesis"); }
+      if (operatorStack->peek()->data != "(") { return new Queue("Mismatched parenthesis"); }
 
       operatorStack->discard();
     }
@@ -98,7 +97,7 @@ string shuntingYard(string input) {
 
   while (!operatorStack->isEmpty()) {
 
-    if (operatorStack->peek() == "(" or operatorStack->peek() == ")") {
+    if (operatorStack->peek()->data == "(" or operatorStack->peek()->data == ")") {
 
       return new Queue("Mismatched parenthesis");
     }
@@ -162,7 +161,22 @@ string getPostfix(Node* input) {
 
   string output;
 
-  
+  output.append(getPostfix(input->left));
+  output.append(getPostfix(input->right));
+  output.append(input->data);
+
+  return output;
+}
+
+string getPrefix(Node* input) {
+
+  string output;
+
+  output.append(input->data);
+  output.append(getPrefix(input->left));
+  output.append(getPrefix(input->right));
+
+  return output;
 }
 
 bool isEqual(string o1, string o2) {
@@ -175,18 +189,19 @@ bool isEqual(string o1, string o2) {
       
 string getGreater(string o1, string o2) {
 
-  int op1;
-  int op2;
+  int num1;
+  int num2;
   
-  if (o1 == "^") { op1 = 4; }
-  else if (o1 == "*" or o1 == "/") { op1 = 3; }
-  else { op1 = 2; }
+  if (o1 == "^") { num1 = 4; }
+  else if (o1 == "*" or o1 == "/") { num1 = 3; }
+  else { num1 = 2; }
 
-  if (o2 = "^") { op2 = 4; }
-  else if (o2 == "*" or o2 == "/") { op2 = 3; }
-  else { op2 = 2; }
+  if (o2 == "^") { num2 = 4; }
+  else if (o2 == "*" or o2 == "/") { num2 = 3; }
+  else { num2 = 2; }
 
-  if (op1 > op2) { return o1; }
-  else if (op2 > op1) { return op2; }
-  else if (op1 == op2) { return op1; }
+  if (num1 > num2) { return o1; }
+  else if (num2 > num1) { return o2; }
+  else if (num1 == num2) { return o1; }
+  else { return "err"; }
 }
