@@ -23,9 +23,10 @@ struct Stack {
 
   ~Stack() { delete head; }
 
-  void push(string data) {
+  void push(string data) { push(new Node(data)); }
+  
+  void push(Node* newNode) {
 
-    Node* newNode = new Node(data);
     newNode->next = head;
     head = newNode;
   }
@@ -34,6 +35,7 @@ struct Stack {
 
     Node* delNode = head;
     head = head->next;
+    delNode->next = nullptr;
     return delNode;
   }
 

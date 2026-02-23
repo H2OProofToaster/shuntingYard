@@ -9,9 +9,9 @@ using namespace std;
 Queue* shuntingYard(string input);
 Node* makeExpressionTree(Queue* input);
 
-void printInfix(Node* input);
-void printPostfix(Node* input);
-void printPrefix(Node* input);
+sting getInfix(Node* input);
+string getPostfix(Node* input);
+string getPrefix(Node* input);
 
 bool isEqual(string o1, string o2);
 int getGreater(string o1, string o2);
@@ -107,6 +107,62 @@ string shuntingYard(string input) {
   }
 
   return output;
+}
+
+Node* makeExpressionTree(Queue* input) {
+
+  Stack* stack = new Stack();
+
+  while (!input->isEmpty()) {
+
+    Node* next = input->dequeue();
+
+    if (next->data == "+" or next->data == "-" or next->data == "*" or next->data == "/") {
+
+      Node* n2 = stack->pop();
+      Node* n1 = stack->pop();
+
+      stack->push(next);
+      stack->peek()->left = n1;
+      stack->peek()->right = n2;
+    }
+
+    else { stack->push(next); }
+  }
+
+  Node* temp = stack->head;
+  stack->head = nullptr;
+  delete stack;
+  return temp;
+}
+
+string getInfix(Node* input) {
+
+  string output;
+
+  if (input->data == "+" or input->data == "-" or input->data == "*" or input->data == "/") {
+
+    output.append("(");
+    output.append(getInfix(input->left));
+    output.append(")");
+
+    output.append(input->data);
+
+    output.append("(");
+    output.append(getInfix(input->right));
+    output.append(")");
+  }
+
+  else { return input->data; }
+
+  return output;
+}
+
+string getPostfix(Node* input) {
+
+  string output;
+
+  
 }
 
 bool isEqual(string o1, string o2) {
