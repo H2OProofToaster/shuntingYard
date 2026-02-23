@@ -22,6 +22,7 @@ struct Stack {
 
   ~Stack() { delete head; }
 
+  //Make take string
   void push(char* data) {
 
     Node* newNode = new Node(data);
@@ -29,6 +30,8 @@ struct Stack {
     head = newNode;
   }
 
+  //Make return node
+  //Make discard function
   void pop() {
 
     Node* delNode = head;
@@ -41,9 +44,12 @@ struct Stack {
 
 struct Queue {
 
+  //Make constructor for errors from shunting
   Node* head = nullptr; //New things
   Node* tail = nullptr; //Old things
 
+  //Make overload for popping from stack
+  //Make take string
   void enqueue(char* data) {
 
     //Empty queue
@@ -60,6 +66,7 @@ struct Queue {
     }
   }
 
+  //Make return string
   char* dequeue() {
 
     //Empty queue
