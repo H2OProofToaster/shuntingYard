@@ -43,12 +43,13 @@ int main() {
   //Ask for output
   string outputType;
   while (outputType.empty()) {
-    cout << "INFIX, POSTFIX, or PREFIX? ";
+    cout << "INFIX, POSTFIX, PREFIX, or QUIT? ";
     cin >> outputType;
 
     if (outputType == "INFIX" or outputType == "in") { cout << getInfix(tree) << endl; }
     else if (outputType == "POSTFIX" or outputType == "post") { cout << getPostfix(tree) << endl; }
     else if (outputType == "PREFIX" or outputType == "pre") { cout << getPrefix(tree) << endl; }
+    else if (outputType == "QUIT" or outputType == "q") { cout << "Quitting..." << endl; break; }
     else { cout << "Not an option" << endl; }
 
     outputType.clear();
@@ -71,7 +72,7 @@ Queue* shuntingYard(string input) {
     else if (word == "+" or word == "-" or word  == "*" or word == "/" or word == "^") {
 
       while (
-              ( operatorStack->peek() == nullptr ? false : operatorStack->peek()->data == "(" )
+              ( operatorStack->peek() == nullptr ? false : operatorStack->peek()->data != "(" )
               and
               (
                 operatorStack->peek() == nullptr ? false : getPrecedence(operatorStack->peek()->data) > getPrecedence(word)
