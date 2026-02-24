@@ -98,7 +98,7 @@ struct Queue {
 
     else {
 
-      Node* temp = tail->next;
+      Node* temp = tail;
       tail = tail->next;
       temp->next = nullptr;
       return temp;

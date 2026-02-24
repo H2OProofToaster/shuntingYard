@@ -14,14 +14,14 @@ string getPostfix(Node* input);
 string getPrefix(Node* input);
 
 bool isEqual(string o1, string o2);
-string getGreater(string o1, string o2);
+int getPrecedence(string o1);
 
 int main() {
 
   //Ask for input
   string input;
   cout << "What is the input (infix)? ";
-  cin >> input;
+  getline(cin, input);
 
   //Do shunting yard algorithm
   cout << "Shunting..." << endl;
@@ -30,7 +30,10 @@ int main() {
   
   cout << "Done" << endl;
 
-  //Make bianry expression tree
+  //Catch mismatched parenthesis
+  if (shuntingOut->head->data == "Mismatched Parenthesis") { cout << "Mismatched Parenthesis"; return 1; }
+
+  //Make binary expression tree
   cout << "Making tree..." << endl;
 
   Node* tree = makeExpressionTree(shuntingOut);
@@ -67,14 +70,20 @@ Queue* shuntingYard(string input) {
 
     else if (word == "+" or word == "-" or word  == "*" or word == "/" or word == "^") {
 
-      while ( (operatorStack->peek()->data != "(") and //top operator (o2) is not "("
-	      (
-	        getGreater(word, operatorStack->peek()->data) != word or //o2 has greater precedence than o1
-
-		  isEqual(word, operatorStack->peek()->data) and //o1 and o2 have same precedence
-		  (word == "+" or word == "-" or word == "*" or word == "/") //o1 is left associative
-	      )
-	    ) { output->enqueue(operatorStack->pop()); }
+      while (
+              ( operatorStack->peek() == nullptr ? false : operatorStack->peek()->data == "(" )
+              and
+              (
+                operatorStack->peek() == nullptr ? false : getPrecedence(operatorStack->peek()->data) > getPrecedence(word)
+                or
+                (
+                  operatorStack->peek() == nullptr ? false : getPrecedence(operatorStack->peek()->data) == getPrecedence(word)
+                  and
+                  (word == "+" or word == "-" or word == "*" or word == "/")
+                )
+              )
+            )
+      { output->enqueue(operatorStack->pop()); }
       operatorStack->push(word);
     }
 
@@ -84,12 +93,12 @@ Queue* shuntingYard(string input) {
 
       while (operatorStack->peek()->data != "(") {
 
-	if (operatorStack->isEmpty()) { return new Queue("Mismatched parenthesis"); }
+	if (operatorStack->isEmpty()) { output->enqueue("Mismatched Parenthesis"); return output; }
 
 	output->enqueue(operatorStack->pop());
       }
 
-      if (operatorStack->peek()->data != "(") { return new Queue("Mismatched parenthesis"); }
+      if (operatorStack->peek()->data != "(") { output->enqueue("Mismatched Parenthesis"); return output; }
 
       operatorStack->discard();
     }
@@ -99,7 +108,8 @@ Queue* shuntingYard(string input) {
 
     if (operatorStack->peek()->data == "(" or operatorStack->peek()->data == ")") {
 
-      return new Queue("Mismatched parenthesis");
+      output->enqueue("Mismatched Parenthesis");
+      return output;
     }
 
     output->enqueue(operatorStack->pop());
@@ -161,8 +171,8 @@ string getPostfix(Node* input) {
 
   string output;
 
-  output.append(getPostfix(input->left));
-  output.append(getPostfix(input->right));
+  if (input->left != nullptr) { output.append(getPostfix(input->left)); }
+  if (input->right != nullptr) { output.append(getPostfix(input->right)); }
   output.append(input->data);
 
   return output;
@@ -173,35 +183,21 @@ string getPrefix(Node* input) {
   string output;
 
   output.append(input->data);
-  output.append(getPrefix(input->left));
-  output.append(getPrefix(input->right));
+  if (input->left != nullptr) { output.append(getPostfix(input->left)); }
+  if (input->right != nullptr) { output.append(getPostfix(input->right)); }
 
   return output;
 }
 
 bool isEqual(string o1, string o2) {
 
-  if (o1 == o2) { return true; }
-  else if ( (o1 == "*" and o2 == "/") or (o1 == "/" and o2 == "*") ) { return true; }
-  else if ( (o1 == "+" and o2 == "-") or (o1 == "-" and o2 == "+") ) { return true; }
-  else { return false; }
+  if ( getPrecedence(o1) == getPrecedence(o2) ) { return true; }
+  return false;
 }
       
-string getGreater(string o1, string o2) {
-
-  int num1;
-  int num2;
+int getPrecedence(string o1) {
   
-  if (o1 == "^") { num1 = 4; }
-  else if (o1 == "*" or o1 == "/") { num1 = 3; }
-  else { num1 = 2; }
-
-  if (o2 == "^") { num2 = 4; }
-  else if (o2 == "*" or o2 == "/") { num2 = 3; }
-  else { num2 = 2; }
-
-  if (num1 > num2) { return o1; }
-  else if (num2 > num1) { return o2; }
-  else if (num1 == num2) { return o1; }
-  else { return "err"; }
+  if (o1 == "^") { return 4; }
+  if (o1 == "*" or o1 == "/") { return 3; }
+  return 2;
 }
