@@ -72,15 +72,15 @@ Queue* shuntingYard(string input) {
     else if (word == "+" or word == "-" or word  == "*" or word == "/" or word == "^") {
 
       while (
-              ( operatorStack->peek() == nullptr ? false : operatorStack->peek()->data != "(" )
+              ( operatorStack->peek() == nullptr ? false : operatorStack->peek()->data != "(" ) //o2 at the top of the stack is not a left parenthesis
               and
               (
-                operatorStack->peek() == nullptr ? false : getPrecedence(operatorStack->peek()->data) > getPrecedence(word)
+                operatorStack->peek() == nullptr ? false : getPrecedence(operatorStack->peek()->data) > getPrecedence(word) //o2 has greater precedence than o1
                 or
                 (
-                  operatorStack->peek() == nullptr ? false : getPrecedence(operatorStack->peek()->data) == getPrecedence(word)
+                  operatorStack->peek() == nullptr ? false : getPrecedence(operatorStack->peek()->data) == getPrecedence(word) //o1 and o2 have the same precedence
                   and
-                  (word == "+" or word == "-" or word == "*" or word == "/")
+                  (word == "+" or word == "-" or word == "*" or word == "/") //o1 is left associative (not "^")
                 )
               )
             )
@@ -92,27 +92,21 @@ Queue* shuntingYard(string input) {
 
     else if (word == ")") {
 
-      while (operatorStack->peek()->data != "(") {
+      while (operatorStack->peek()->data != "(") { //o2 is not a left parenthesis
 
-	if (operatorStack->isEmpty()) { output->enqueue("Mismatched Parenthesis"); return output; }
-
-	output->enqueue(operatorStack->pop());
+	      if (operatorStack->isEmpty()) { output->enqueue("Mismatched Parenthesis"); return output; } //stack is not empty
+	      output->enqueue(operatorStack->pop());
       }
 
-      if (operatorStack->peek()->data != "(") { output->enqueue("Mismatched Parenthesis"); return output; }
+      if (operatorStack->peek()->data != "(") { output->enqueue("Mismatched Parenthesis"); return output; } //there is not a left parenthesis at the top of the stack
 
       operatorStack->discard();
     }
   }
 
-  while (!operatorStack->isEmpty()) {
+  while (!operatorStack->isEmpty()) { //operators in stack
 
-    if (operatorStack->peek()->data == "(" or operatorStack->peek()->data == ")") {
-
-      output->enqueue("Mismatched Parenthesis");
-      return output;
-    }
-
+    if (operatorStack->peek()->data == "(" or operatorStack->peek()->data == ")") { output->enqueue("Mismatched Parenthesis"); return output; } //o2 is not a parenthesis
     output->enqueue(operatorStack->pop());
   }
 
@@ -127,7 +121,7 @@ Node* makeExpressionTree(Queue* input) {
 
     Node* next = input->dequeue();
 
-    if (next->data == "+" or next->data == "-" or next->data == "*" or next->data == "/") {
+    if (next->data == "+" or next->data == "-" or next->data == "*" or next->data == "/" or next->data == "^") {
 
       Node* n2 = stack->pop();
       Node* n1 = stack->pop();
@@ -150,7 +144,7 @@ string getInfix(Node* input) {
 
   string output;
 
-  if (input->data == "+" or input->data == "-" or input->data == "*" or input->data == "/") {
+  if (input->data == "+" or input->data == "-" or input->data == "*" or input->data == "/" or input->data == "^") {
 
     output.append("(");
     output.append(getInfix(input->left));

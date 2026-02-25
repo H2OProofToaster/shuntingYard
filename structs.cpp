@@ -47,6 +47,7 @@ struct Stack {
 
     Node* delNode = head;
     head = head->next;
+    delNode->next = nullptr;
     delete delNode;
   }
 
