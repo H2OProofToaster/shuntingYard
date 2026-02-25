@@ -38,6 +38,9 @@ int main() {
 
   Node* tree = makeExpressionTree(shuntingOut);
 
+  //Cleanup
+  delete shuntingOut;
+
   cout << "Done" << endl;
 
   //Ask for output
@@ -60,6 +63,7 @@ int main() {
 
 Queue* shuntingYard(string input) {
 
+  //Setup input stream, output queue, and operator stack
   stringstream ss(input);
   string word;
   Queue* output = new Queue();
@@ -67,6 +71,7 @@ Queue* shuntingYard(string input) {
   
   while (ss >> word) {
 
+    //Number, add to queue
     if (word == "0" or word == "1" or word == "2" or word == "3" or word == "4" or word == "5" or word == "6" or word == "7" or word == "8" or word == "9") { output->enqueue(word); }
 
     else if (word == "+" or word == "-" or word  == "*" or word == "/" or word == "^") {
@@ -84,8 +89,8 @@ Queue* shuntingYard(string input) {
                 )
               )
             )
-      { output->enqueue(operatorStack->pop()); }
-      operatorStack->push(word);
+      { output->enqueue(operatorStack->pop()); } //add top operator to queue
+      operatorStack->push(word); //curren token to stack
     }
 
     else if (word == "(") { operatorStack->push(word); }
@@ -94,11 +99,11 @@ Queue* shuntingYard(string input) {
 
       while (operatorStack->peek()->data != "(") { //o2 is not a left parenthesis
 
-	      if (operatorStack->isEmpty()) { output->enqueue("Mismatched Parenthesis"); return output; } //stack is not empty
+	      if (operatorStack->isEmpty()) { output->enqueue("Mismatched Parenthesis"); delete operatorStack; return output; } //stack is not empty
 	      output->enqueue(operatorStack->pop());
       }
 
-      if (operatorStack->peek()->data != "(") { output->enqueue("Mismatched Parenthesis"); return output; } //there is not a left parenthesis at the top of the stack
+      if (operatorStack->peek()->data != "(") { output->enqueue("Mismatched Parenthesis"); delete operatorStack; return output; } //there is not a left parenthesis at the top of the stack
 
       operatorStack->discard();
     }
@@ -106,10 +111,12 @@ Queue* shuntingYard(string input) {
 
   while (!operatorStack->isEmpty()) { //operators in stack
 
-    if (operatorStack->peek()->data == "(" or operatorStack->peek()->data == ")") { output->enqueue("Mismatched Parenthesis"); return output; } //o2 is not a parenthesis
+    if (operatorStack->peek()->data == "(" or operatorStack->peek()->data == ")") { output->enqueue("Mismatched Parenthesis"); delete operatorStack; return output; } //o2 is not a parenthesis
     output->enqueue(operatorStack->pop());
   }
 
+  //Cleanup and return output
+  delete operatorStack;
   return output;
 }
 
@@ -117,10 +124,12 @@ Node* makeExpressionTree(Queue* input) {
 
   Stack* stack = new Stack();
 
+  //while stack is not empty, process next node
   while (!input->isEmpty()) {
 
     Node* next = input->dequeue();
 
+    //make new tree if it's an operator
     if (next->data == "+" or next->data == "-" or next->data == "*" or next->data == "/" or next->data == "^") {
 
       Node* n2 = stack->pop();
@@ -131,9 +140,11 @@ Node* makeExpressionTree(Queue* input) {
       stack->peek()->right = n2;
     }
 
+    //add number to stack (input should be validated already)
     else { stack->push(next); }
   }
 
+  //cleanup
   Node* temp = stack->head;
   stack->head = nullptr;
   delete stack;
@@ -146,12 +157,14 @@ string getInfix(Node* input) {
 
   if (input->data == "+" or input->data == "-" or input->data == "*" or input->data == "/" or input->data == "^") {
 
+    //print left subtree
     output.append("(");
     output.append(getInfix(input->left));
     output.append(")");
 
     output.append(input->data);
 
+    //print right subt
     output.append("(");
     output.append(getInfix(input->right));
     output.append(")");
