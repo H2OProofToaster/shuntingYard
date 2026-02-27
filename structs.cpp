@@ -2,6 +2,7 @@
 #define STRUCTS_CPP
 
 #include <string>
+#include <iostream>
 
 using namespace std;
 
@@ -89,7 +90,7 @@ struct Queue {
     if (tail == nullptr) { return nullptr; }
 
     //One element
-    else if (*tail == *head) {
+    else if (tail == head) {
 
       Node* temp = tail;
       tail = nullptr;
@@ -106,6 +107,12 @@ struct Queue {
     }
   }
 
+  void print() {
+
+    Node* nextptr = tail;
+    while (nextptr != nullptr) { cout << nextptr->data; nextptr = nextptr->next; }
+  }
+  
   bool isEmpty() { return (head == nullptr) ? true : false; }
 };
             

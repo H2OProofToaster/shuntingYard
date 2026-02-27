@@ -27,7 +27,10 @@ int main() {
   cout << "Shunting..." << endl;
 
   Queue* shuntingOut = shuntingYard(input);
-  
+  cout << "Shunting out: \"";
+  shuntingOut->print();
+  cout << "\"" << endl;
+
   cout << "Done" << endl;
 
   //Catch mismatched parenthesis
@@ -164,7 +167,7 @@ string getInfix(Node* input) {
 
     output.append(input->data);
 
-    //print right subt
+    //print right subtree
     output.append("(");
     output.append(getInfix(input->right));
     output.append(")");
